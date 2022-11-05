@@ -18,5 +18,5 @@ Comando para usar el bot:
 <br>
 Resultados:
 <br>
-<img src="[https://i.imgur.com/BDskcPQ.png](https://i.imgur.com/JNWcaQ4.png)">
+<img src="https://i.imgur.com/JNWcaQ4.png">
 <br>
