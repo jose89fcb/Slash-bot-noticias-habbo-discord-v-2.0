@@ -122,7 +122,7 @@ async def _noticias(ctx:SlashContext, hotel:str):
     
 
     resumen =  html.unescape(url.json()[0]['summary'])
-    fecha = time.strftime("%A, %#d de %B de %Y", time.localtime(int(url.json()[0]['published']/1000)))
+    fecha = time.strftime("%A, %#d de %B del %Y  Hora: %H:%M:%S", time.localtime(int(url.json()[0]['published']/1000)))
 
 
     #####
