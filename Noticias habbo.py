@@ -113,16 +113,16 @@ async def _noticias(ctx:SlashContext, hotel:str):
 
     hotel=f"{hotel}" # es -> com ->it -> de -> fr -> com.tr ->nl -> com.br
 
-    titulo = html.unescape(url.json()[0]['title'])
+    titulo = html.unescape(url.json()[1]['title'])
 
-    imagen = url.json()[0]['featured']
-    imagenPeque = url.json()[0]['thumbnail']
+    imagen = url.json()[1]['featured']
+    imagenPeque = url.json()[1]['thumbnail']
 
-    urlNoticia = url.json()[0]['path']
+    urlNoticia = url.json()[11]['path']
     
 
-    resumen =  html.unescape(url.json()[0]['summary'])
-    fecha = time.strftime("%A, %#d de %B del %Y  Hora: %H:%M:%S", time.localtime(int(url.json()[0]['published']/1000)))
+    resumen =  html.unescape(url.json()[1]['summary'])
+    fecha = time.strftime("%A, %#d de %B del %Y  Hora: %H:%M:%S", time.localtime(int(url.json()[1]['published']/1000)))
 
 
     #####
