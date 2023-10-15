@@ -20,7 +20,7 @@ bot = commands.Bot(command_prefix=config["comando"], description="ayuda bot") #C
 bot.remove_command("help") # Borra el comando por defecto !help
 slash = SlashCommand(bot, sync_commands=True)
 @slash.slash(
-    name="Noticias", description="Noticias Habbo Hotel",
+    name="noticias", description="Noticias Habbo Hotel",
     options=[
                 
                  create_option(
@@ -106,48 +106,44 @@ async def _noticias(ctx:SlashContext, hotel:str):
     "fi":"fi"
     }
     HotelNoticia = HotelNoticia_dict[str(hotel)]
-    HotelNoticia=f"{HotelNoticia}" ## es -> en -> it -> de-> fr -> fi -> fi -> tr -> nl -> pt 
-    url =  requests.get(f"https://images.habbo.com/habbo-web-news/{HotelNoticia}/production/front.json")
-    
-    
 
-    hotel=f"{hotel}" # es -> com ->it -> de -> fr -> com.tr ->nl -> com.br
+    url = f"https://images.habbo.com/habbo-web-news/{HotelNoticia}/production/front.json"
+    response = requests.get(url)
+    news_data = response.json()
 
-    titulo = html.unescape(url.json()[1]['title'])
+    # Find the latest news dynamically
+    latest_news = max(news_data, key=lambda x: x.get("published", 0), default=None)
 
-    imagen = url.json()[1]['featured']
-    imagenPeque = url.json()[1]['thumbnail']
+    if latest_news:
+        title = html.unescape(latest_news.get('title', 'No Title'))
+        summary = html.unescape(latest_news.get('summary', 'No Summary'))
+        published_time = int(latest_news.get('published', 0) / 1000)
+        formatted_time = time.strftime("%A, %#d de %B del %Y  Hora: %H:%M:%S", time.localtime(published_time))
+        path = latest_news.get('path', '')
+        image = latest_news.get('featured', '')
+        thumbnail = latest_news.get('thumbnail', '')
 
-    urlNoticia = url.json()[11]['path']
-    
+        embed = discord.Embed(
+            title=f"{title}",
+            description=f"{summary}\n\n[Ver Noticia en Habbo.{hotel}]({f'https://habbo.{hotel}{path}'})",
+            color=discord.Colour.random()
+        )
+        embed.set_image(url=f"{image}")
+        embed.set_author(name=f"Habbo [{HotelNoticia}]", icon_url=f"{bandera}")
+        embed.set_footer(text=f"habbo [{HotelNoticia}] - {formatted_time}", icon_url="https://i.imgur.com/6ePWlHz.png")
+        embed.set_thumbnail(url=f"{thumbnail}")
 
-    resumen =  html.unescape(url.json()[1]['summary'])
-    fecha = time.strftime("%A, %#d de %B del %Y  Hora: %H:%M:%S", time.localtime(int(url.json()[1]['published']/1000)))
+        await ctx.send(embed=embed)
+    else:
+        await ctx.send("No se encontraron noticias recientes.")
 
-
-    #####
-
-    embed = discord.Embed(title=f"{titulo}", description=f"{resumen}" f"\n\n\n[Ver Noticia en Habbo.{hotel}]"+"("+ f"https://habbo.{hotel}{urlNoticia})", color=discord.Colour.random())
-    embed.set_image(url=f"{imagen}" )
-    embed.set_author(name=f"Habbo [{HotelNoticia}]",  icon_url=f"{bandera}")
-    embed.set_footer(text=f"habbo [{HotelNoticia}] - {fecha}", icon_url="https://i.imgur.com/6ePWlHz.png")
-
-    embed.set_thumbnail(url=f"{imagenPeque}" )
-    await ctx.send(embed=embed)
-   
- 
 @bot.event
 async def on_command_error(ctx, error):
-  if isinstance(error, commands.CommandNotFound):
-    await ctx.send('El comando no existe 🤷🏼‍♂️🔍')
-  
+    if isinstance(error, commands.CommandNotFound):
+        await ctx.send('El comando no existe 🤷🏼‍♂️🔍')
 
 @bot.event
 async def on_ready():
     print("BOT listo!")
-
-
-
-
 
 bot.run(config["token_discord"])
